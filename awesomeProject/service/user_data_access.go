@@ -2,12 +2,8 @@ package service
 
 import "../model"
 
-func UserInsert(user *model.User)  {
+func UserInsert(user *model.User) {
 	DB.Save(user)
-}
-
-func UserDelete(user *model.User) {
-	DB.Delete(user)
 }
 
 func UsersFindAll(users *[]model.User) {

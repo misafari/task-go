@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"../codeConst"
 	"../model"
 	"../service"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type TaskPersistRequest struct {
@@ -16,7 +18,7 @@ func TaskSave(c *gin.Context) {
 	var requestBody TaskPersistRequest
 
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		c.JSON(401, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{codeConst.Error: err.Error()})
 		return
 	}
 
@@ -25,7 +27,10 @@ func TaskSave(c *gin.Context) {
 		Description: requestBody.Description,
 	}
 
-	service.TaskPersist(requestBody.OwnerUsername, &task)
+	if err := service.TaskPersist(requestBody.OwnerUsername, &task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{codeConst.Error: err.Error()})
+		return
+	}
 
-	c.JSON(201, gin.H{"data": true})
+	c.JSON(http.StatusCreated, gin.H{codeConst.Data: true})
 }

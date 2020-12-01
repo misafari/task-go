@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"../codeConst"
 	"../model"
 	"../service"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type UserPersistRequest struct {
@@ -16,7 +18,7 @@ func UserSave(c *gin.Context) {
 	var requestBody UserPersistRequest
 
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		c.JSON(401, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{codeConst.Error: err.Error()})
 		return
 	}
 
@@ -28,14 +30,14 @@ func UserSave(c *gin.Context) {
 
 	service.UserInsert(&user)
 
-	c.JSON(201, gin.H{"data": true})
+	c.JSON(http.StatusCreated, gin.H{codeConst.Data: true})
 }
 
 func UsersFindALl(c *gin.Context) {
 	var users []model.User
 	service.UsersFindAll(&users)
 
-	c.JSON(200, gin.H{"data": users})
+	c.JSON(http.StatusOK, gin.H{codeConst.Data: users})
 }
 
 func UserFindByUsername(c *gin.Context) {
@@ -43,9 +45,9 @@ func UserFindByUsername(c *gin.Context) {
 	err := service.UserFindByUsername(c.Param("username"), &user)
 
 	if err != nil {
-		c.JSON(404, gin.H{"error": "user not found."})
+		c.JSON(http.StatusNotFound, gin.H{codeConst.Error: codeConst.EntityNotFound("user")})
 		return
 	}
 
-	c.JSON(200, gin.H{"data": user})
+	c.JSON(http.StatusOK, gin.H{codeConst.Data: user})
 }
